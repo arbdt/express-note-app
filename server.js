@@ -10,45 +10,30 @@ let PORT = process.env.PORT || 3003; // port: change when uploading to cloud / u
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json()); // for using json
-app.use(express.static("public")); // to apply js and css assets to html pages
-
-// PAGE PATHS ---
-// notes page
-app.get("/notes", function(request, response){
-    //send notes.html to the client
-    response.sendFile(path.join(__dirname, "public/notes.html"));
-});
-
-// home page
-app.get("*", function(request, response){
-    // send home page to the client
-    response.sendFile(path.join(__dirname, "public/index.html"));
-});
+app.use(express.static("public")); // to apply local js and css assets to html pages
 
 // API PATHS ---
 // GET notes
 app.get("/api/notes", function(request, response){
-    console.log("Attempting GET NOTES");
     // read in content of db.json
     fs.readFile("db/db.json", "utf8", function(err, data){
         if (err){
             console.error(err);
         }
-        console.log(data);
         // convert string into values
         let noteDBcontent = JSON.parse(data);
-        console.log(Array.isArray(noteDBcontent)); // it is definitely an array of type Array
         // send values
         response.json(noteDBcontent);
     });
 });
 
 // POST notes
-app.post("/api/notes", function(request, response){
+app.post("/api/notes", function(request, response){ // ERROR: Connection reset when saving
     // newNote has title and text properties
     let newNote = request.body;
     console.log(newNote); // check content
     //read from db.json
+    // if everything here is run inside app.listen() it works, so it should work inside app.post() too...
     fs.readFile("db/db.json", "utf8", function(err, data){
         if (err){
             console.error(err);
@@ -58,8 +43,10 @@ app.post("/api/notes", function(request, response){
         let noteDBcontent = JSON.parse(data);
         // append new note
         noteDBcontent.push(newNote);
+        // convert to string for writing
+        let dataToWrite = JSON.stringify(noteDBcontent);
         //rewrite to db.json
-        fs.writeFile("db/db.json", noteDBcontent, "utf8", function(){
+        fs.writeFile("db/db.json", dataToWrite, "utf8", function(){ 
             response.json(newNote); // return new note to client
         });
     });
@@ -75,7 +62,20 @@ app.delete("/api/notes/:id", function(request, response){
     // rewrite to db.json
 });
 
-// ---------- 
+// PAGE PATHS ---
+// notes page
+app.get("/notes", function(request, response){
+    //send notes.html to the client
+    response.sendFile(path.join(__dirname, "public/notes.html"));
+});
+
+// home page
+app.get("*", function(request, response){
+    // send home page to the client
+    response.sendFile(path.join(__dirname, "public/index.html"));
+});
+
+// ----------
 
 // run server
 app.listen(PORT, function (){
