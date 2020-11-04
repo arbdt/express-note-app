@@ -12,6 +12,19 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json()); // for using json
 app.use(express.static("public")); // to apply js and css assets to html pages
 
+// PAGE PATHS ---
+// notes page
+app.get("/notes", function(request, response){
+    //send notes.html to the client
+    response.sendFile(path.join(__dirname, "public/notes.html"));
+});
+
+// home page
+app.get("*", function(request, response){
+    // send home page to the client
+    response.sendFile(path.join(__dirname, "public/index.html"));
+});
+
 // ---------- 
 
 // run server
