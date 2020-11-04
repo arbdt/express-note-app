@@ -43,6 +43,28 @@ app.get("/api/notes", function(request, response){
     });
 });
 
+// POST notes
+app.post("/api/notes", function(request, response){
+    // newNote has title and text properties
+    let newNote = request.body;
+    console.log(newNote); // check content
+    //read from db.json
+    fs.readFile("db/db.json", "utf8", function(err, data){
+        if (err){
+            console.error(err);
+        }
+        console.log(data);
+        // convert string into values
+        let noteDBcontent = JSON.parse(data);
+        // append new note
+        noteDBcontent.push(newNote);
+        //rewrite to db.json
+        fs.writeFile("db/db.json", noteDBcontent, "utf8", function(){
+            response.json(newNote); // return new note to client
+        });
+    });
+});
+
 // ---------- 
 
 // run server
