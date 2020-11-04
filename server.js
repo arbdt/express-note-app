@@ -65,6 +65,16 @@ app.post("/api/notes", function(request, response){
     });
 });
 
+// DELETE notes
+app.delete("/api/notes/:id", function(request, response){
+    let idToDelete = request.params.id;
+    console.log(idToDelete);
+    // read in db.json content
+    //match with :id
+    // remove matching note
+    // rewrite to db.json
+});
+
 // ---------- 
 
 // run server
