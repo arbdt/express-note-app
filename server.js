@@ -25,6 +25,24 @@ app.get("*", function(request, response){
     response.sendFile(path.join(__dirname, "public/index.html"));
 });
 
+// API PATHS ---
+// GET notes
+app.get("/api/notes", function(request, response){
+    console.log("Attempting GET NOTES");
+    // read in content of db.json
+    fs.readFile("db/db.json", "utf8", function(err, data){
+        if (err){
+            console.error(err);
+        }
+        console.log(data);
+        // convert string into values
+        let noteDBcontent = JSON.parse(data);
+        console.log(Array.isArray(noteDBcontent)); // it is definitely an array of type Array
+        // send values
+        response.json(noteDBcontent);
+    });
+});
+
 // ---------- 
 
 // run server
