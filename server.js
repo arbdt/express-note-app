@@ -29,25 +29,32 @@ app.get("/api/notes", function(request, response){
 
 // POST notes
 app.post("/api/notes", function(request, response){ // ERROR: Connection reset when saving
-    // newNote has title and text properties
-    let newNote = request.body;
-    console.log(newNote); // check content
-    //read from db.json
-    // if everything here is run inside app.listen() it works, so it should work inside app.post() too...
+    // note from client has title and text properties
+    let postedNote = request.body;
+    //read existing notes from db.json
     fs.readFile("db/db.json", "utf8", function(err, data){
         if (err){
             console.error(err);
         }
-        console.log(data);
         // convert string into values
         let noteDBcontent = JSON.parse(data);
-        // append new note
-        noteDBcontent.push(newNote);
+        // generate new note for storage from client content
+        let noteToAdd = {title: postedNote.title, text: postedNote.text, id: 0};
+        // generate note id
+        if (noteDBcontent.length == 0){
+            noteToAdd.id = 1;
+        }
+        else {
+            let latestId = noteDBcontent[noteDBcontent.length-1].id;
+            noteToAdd.id = latestId + 1;
+        }
+        // append new note to storage
+        noteDBcontent.push(noteToAdd);
         // convert to string for writing
         let dataToWrite = JSON.stringify(noteDBcontent);
         //rewrite to db.json
         fs.writeFile("db/db.json", dataToWrite, "utf8", function(){ 
-            response.json(newNote); // return new note to client
+            response.json(postedNote); // return note to client
         });
     });
 });
@@ -80,4 +87,5 @@ app.get("*", function(request, response){
 // run server
 app.listen(PORT, function (){
     console.log(`Server is active and listening on PORT ${PORT}.`);
+    
 });
