@@ -7,4 +7,4 @@ The app allows users to read, save, and delete notes to a file on the server.
 The HTML pages, CSS style sheet, front-end JavaScript file, and storage file were provided to me as-is. My task for this project was to fill out a server.js file with Express content to make the application work.
 
 ## Preview
-This project is also available on Heroku.
+This project is also available on Heroku. The address for the Heroku deployment is (https://lit-inlet-27170.herokuapp.com/).
