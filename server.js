@@ -41,10 +41,10 @@ app.post("/api/notes", function(request, response){ // ERROR: Connection reset w
         // generate new note for storage from client content
         let noteToAdd = {title: postedNote.title, text: postedNote.text, id: 0};
         // generate note id
-        if (noteDBcontent.length == 0){
+        if (noteDBcontent.length == 0){ // if no notes
             noteToAdd.id = 1;
         }
-        else {
+        else { // if notes exist
             let latestId = noteDBcontent[noteDBcontent.length-1].id;
             noteToAdd.id = latestId + 1;
         }
@@ -61,12 +61,29 @@ app.post("/api/notes", function(request, response){ // ERROR: Connection reset w
 
 // DELETE notes
 app.delete("/api/notes/:id", function(request, response){
-    let idToDelete = request.params.id;
-    console.log(idToDelete);
-    // read in db.json content
-    //match with :id
-    // remove matching note
-    // rewrite to db.json
+    let idToDelete = request.params.id; // get target ID from url
+    // read in content of db.json
+    fs.readFile("db/db.json", "utf8", function(err, data){
+        if (err){
+            console.error(err);
+        }
+        // convert string into values
+        let noteDBcontent = JSON.parse(data);
+        // match :id with note.id
+        for (let i = 0; i < noteDBcontent.length; i++){
+            if (noteDBcontent[i].id == idToDelete){
+                // remove matching note
+                noteDBcontent.splice(i, 1);
+                //rewrite to db.json
+                let dataToWrite = JSON.stringify(noteDBcontent);
+                fs.writeFile("db/db.json", dataToWrite, "utf8", function(){ 
+                    response.json(`Note with ID:${idToDelete} deleted.`);
+                });
+            }
+        }
+    });
+
+
 });
 
 // PAGE PATHS ---
